@@ -1,0 +1,5 @@
+token = "MTA2NzUzOTQ5NTA1NjA1NjQwMg.G8qnKC.GW2RTnVn_el3nLYviae5c22sGOLBqvVO91e8X8"
+channelId = "1382796448864932041"
+delay = 0 
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/tobi437a/Autojoiner/refs/heads/main/autojoiner.lua'))()
