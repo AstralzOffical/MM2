@@ -1,0 +1,136 @@
+
+-- Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ScreenGui setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LoadingUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
+
+-- UI scale for mobile
+local uiScale = Instance.new("UIScale", screenGui)
+uiScale.Scale = 1.4
+
+-- Main frame
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 360, 0, 160)
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 16)
+
+-- Username label
+local usernameLabel = Instance.new("TextLabel", mainFrame)
+usernameLabel.Size = UDim2.new(1, -70, 0, 50)
+usernameLabel.Position = UDim2.new(0, 70, 0, 5)
+usernameLabel.Text = player.Name
+usernameLabel.TextColor3 = Color3.new(1, 1, 1)
+usernameLabel.BackgroundTransparency = 1
+usernameLabel.Font = Enum.Font.GothamBold
+usernameLabel.TextSize = 24
+usernameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Profile frame + image
+local profileFrame = Instance.new("Frame", mainFrame)
+profileFrame.Size = UDim2.new(0, 50, 0, 50)
+profileFrame.Position = UDim2.new(0, 10, 0, 5)
+profileFrame.BackgroundTransparency = 1
+
+local profileImage = Instance.new("ImageLabel", profileFrame)
+profileImage.Size = UDim2.new(1, 0, 1, 0)
+profileImage.BackgroundTransparency = 1
+profileImage.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. player.UserId .. "&width=420&height=420&format=png"
+Instance.new("UICorner", profileImage).CornerRadius = UDim.new(1, 0)
+
+-- Loading bar background
+local barBackground = Instance.new("Frame", mainFrame)
+barBackground.Size = UDim2.new(0.9, 0, 0, 25)
+barBackground.Position = UDim2.new(0.05, 0, 0, 80)
+barBackground.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+barBackground.BorderSizePixel = 0
+Instance.new("UICorner", barBackground).CornerRadius = UDim.new(0, 10)
+
+-- Loading bar fill
+local barFill = Instance.new("Frame", barBackground)
+barFill.Size = UDim2.new(0, 1, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(43, 43, 43)
+barFill.BorderSizePixel = 0
+Instance.new("UICorner", barFill).CornerRadius = UDim.new(0, 10)
+
+-- Loading text
+local loadingTextLabel = Instance.new("TextLabel", mainFrame)
+loadingTextLabel.Size = UDim2.new(0, 200, 0, 25)
+loadingTextLabel.Position = UDim2.new(0.5, -100, 0, 115)
+loadingTextLabel.BackgroundTransparency = 1
+loadingTextLabel.Text = "Loading MM2 Script: 0%"
+loadingTextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+loadingTextLabel.Font = Enum.Font.GothamBold
+loadingTextLabel.TextSize = 18
+loadingTextLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Run Script Button Frame
+local centerHolder = Instance.new("Frame", screenGui)
+centerHolder.Size = UDim2.new(0, 140, 0, 50)
+centerHolder.Position = UDim2.new(0.5, 0, 0.85, -220)
+centerHolder.AnchorPoint = Vector2.new(0.5, 0.5)
+centerHolder.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+centerHolder.Visible = false
+Instance.new("UICorner", centerHolder).CornerRadius = UDim.new(0, 12)
+
+-- Run Script Button
+local centerButton = Instance.new("TextButton", centerHolder)
+centerButton.Size = UDim2.new(1, 0, 1, 0)
+centerButton.Text = "Run Script"
+centerButton.BackgroundTransparency = 1
+centerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+centerButton.Font = Enum.Font.GothamBold
+centerButton.TextSize = 24
+
+centerButton.MouseEnter:Connect(function()
+TweenService:Create(centerHolder, TweenInfo.new(0.2), {Size = UDim2.new(0, 160, 0, 55)}):Play()
+end)
+
+centerButton.MouseLeave:Connect(function()
+TweenService:Create(centerHolder, TweenInfo.new(0.2), {Size = UDim2.new(0, 140, 0, 50)}):Play()
+end)
+
+-- Kick on click
+centerButton.MouseButton1Click:Connect(function()
+player:Kick("Please check your internet connection and try again.\n(Error Code: 435)")
+end)
+
+-- Load progress animation
+task.spawn(function()
+local blur = Instance.new("BlurEffect", Lighting)
+blur.Size = 24
+
+local currentProgress = 0  
+while currentProgress < 100 do  
+    currentProgress += 1  
+    local progress = currentProgress / 100  
+    barFill.Size = UDim2.new(progress, 0, 1, 0)  
+    loadingTextLabel.Text = "Loading MM2 Script: " .. currentProgress .. "%"  
+    task.wait(2)  
+end  
+
+-- Finish loading  
+task.wait(1)  
+barBackground.Visible = false  
+loadingTextLabel.Visible = false  
+
+centerHolder.Visible = true  
+centerHolder.BackgroundTransparency = 1  
+centerButton.TextTransparency = 1  
+
+TweenService:Create(centerHolder, TweenInfo.new(0.4), {BackgroundTransparency = 0}):Play()  
+TweenService:Create(centerButton, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
+
+end)
